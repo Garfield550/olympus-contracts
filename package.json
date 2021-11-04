@@ -22,10 +22,10 @@
     "solhint-plugin-prettier": "0.0.5"
   },
   "scripts": {
-    "test": "npx hardhat test",
-    "compile": "npx hardhat compile",
-    "clean": "npx hardhat clean",
-    "start": "npx hardhat run scripts/deployAll.js",
+    "test": "hardhat test",
+    "compile": "hardhat compile",
+    "clean": "hardhat clean",
+    "start": "hardhat run scripts/deployAll.js",
     "lint:sol": "solhint -f table contracts/**/*.sol"
   },
   "repository": {
