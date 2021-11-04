@@ -341,7 +341,7 @@ contract OlympusTreasury is Ownable {
       require(isLiquidityDepositor[msg.sender], "Not approved");
     }
 
-    uint256 value = valueOf(_token, _amount);
+    uint256 value = valueOfToken(_token, _amount);
     // mint OHM needed and store amount of rewards for distribution
     send_ = value.sub(_profit);
     IERC20Mintable(OHM).mint(msg.sender, send_);
@@ -361,7 +361,7 @@ contract OlympusTreasury is Ownable {
     require(isReserveToken[_token], "Not accepted"); // Only reserves can be used for redemptions
     require(isReserveSpender[msg.sender] == true, "Not approved");
 
-    uint256 value = valueOf(_token, _amount);
+    uint256 value = valueOfToken(_token, _amount);
     IOHMERC20(OHM).burnFrom(msg.sender, value);
 
     totalReserves = totalReserves.sub(value);
@@ -381,7 +381,7 @@ contract OlympusTreasury is Ownable {
     require(isDebtor[msg.sender], "Not approved");
     require(isReserveToken[_token], "Not accepted");
 
-    uint256 value = valueOf(_token, _amount);
+    uint256 value = valueOfToken(_token, _amount);
 
     uint256 maximumDebt = IERC20(sOHM).balanceOf(msg.sender); // Can only borrow against sOHM held
     uint256 availableDebt = maximumDebt.sub(debtorBalance[msg.sender]);
@@ -409,7 +409,7 @@ contract OlympusTreasury is Ownable {
 
     IERC20(_token).safeTransferFrom(msg.sender, address(this), _amount);
 
-    uint256 value = valueOf(_token, _amount);
+    uint256 value = valueOfToken(_token, _amount);
     debtorBalance[msg.sender] = debtorBalance[msg.sender].sub(value);
     totalDebt = totalDebt.sub(value);
 
@@ -446,7 +446,7 @@ contract OlympusTreasury is Ownable {
       require(isReserveManager[msg.sender], "Not approved");
     }
 
-    uint256 value = valueOf(_token, _amount);
+    uint256 value = valueOfToken(_token, _amount);
     require(value <= excessReserves(), "Insufficient reserves");
 
     totalReserves = totalReserves.sub(value);
@@ -484,10 +484,10 @@ contract OlympusTreasury is Ownable {
   function auditReserves() external onlyManager {
     uint256 reserves;
     for (uint256 i = 0; i < reserveTokens.length; i++) {
-      reserves = reserves.add(valueOf(reserveTokens[i], IERC20(reserveTokens[i]).balanceOf(address(this))));
+      reserves = reserves.add(valueOfToken(reserveTokens[i], IERC20(reserveTokens[i]).balanceOf(address(this))));
     }
     for (uint256 i = 0; i < liquidityTokens.length; i++) {
-      reserves = reserves.add(valueOf(liquidityTokens[i], IERC20(liquidityTokens[i]).balanceOf(address(this))));
+      reserves = reserves.add(valueOfToken(liquidityTokens[i], IERC20(liquidityTokens[i]).balanceOf(address(this))));
     }
     totalReserves = reserves;
     emit ReservesUpdated(reserves);
@@ -500,7 +500,7 @@ contract OlympusTreasury is Ownable {
         @param _amount uint
         @return value_ uint
      */
-  function valueOf(address _token, uint256 _amount) public view returns (uint256 value_) {
+  function valueOfToken(address _token, uint256 _amount) public view returns (uint256 value_) {
     if (isReserveToken[_token]) {
       // convert amount to match OHM decimals
       value_ = _amount.mul(10**IERC20(OHM).decimals()).div(10**IERC20(_token).decimals());
