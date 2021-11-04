@@ -354,7 +354,6 @@ contract MockOlympusTreasury is Ownable {
     }
 
     uint256 value = valueOfToken(_token, _amount);
-    (_token, _amount);
     // mint OHM needed and store amount of rewards for distribution
     send_ = value.sub(_profit);
     IERC20Mintable(OHM).mint(msg.sender, send_);
@@ -460,7 +459,6 @@ contract MockOlympusTreasury is Ownable {
     }
 
     uint256 value = valueOfToken(_token, _amount);
-    (_token, _amount);
     require(value <= excessReserves(), "Insufficient reserves");
 
     totalReserves = totalReserves.sub(value);
