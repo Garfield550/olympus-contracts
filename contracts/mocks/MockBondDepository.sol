@@ -15,14 +15,8 @@ contract Ownable is IOwnable {
   address internal _owner;
   address internal _newOwner;
 
-  event OwnershipPushed(
-    address indexed previousOwner,
-    address indexed newOwner
-  );
-  event OwnershipPulled(
-    address indexed previousOwner,
-    address indexed newOwner
-  );
+  event OwnershipPushed(address indexed previousOwner, address indexed newOwner);
+  event OwnershipPulled(address indexed previousOwner, address indexed newOwner);
 
   constructor() {
     _owner = msg.sender;
@@ -43,12 +37,7 @@ contract Ownable is IOwnable {
     _owner = address(0);
   }
 
-  function pushManagement(address newOwner_)
-    public
-    virtual
-    override
-    onlyPolicy
-  {
+  function pushManagement(address newOwner_) public virtual override onlyPolicy {
     require(newOwner_ != address(0), "Ownable: new owner is the zero address");
     emit OwnershipPushed(_owner, newOwner_);
     _newOwner = newOwner_;
@@ -151,16 +140,10 @@ library Address {
 
     // solhint-disable-next-line avoid-low-level-calls, avoid-call-value
     (bool success, ) = recipient.call{value: amount}("");
-    require(
-      success,
-      "Address: unable to send value, recipient may have reverted"
-    );
+    require(success, "Address: unable to send value, recipient may have reverted");
   }
 
-  function functionCall(address target, bytes memory data)
-    internal
-    returns (bytes memory)
-  {
+  function functionCall(address target, bytes memory data) internal returns (bytes memory) {
     return functionCall(target, data, "Address: low-level call failed");
   }
 
@@ -177,13 +160,7 @@ library Address {
     bytes memory data,
     uint256 value
   ) internal returns (bytes memory) {
-    return
-      functionCallWithValue(
-        target,
-        data,
-        value,
-        "Address: low-level call with value failed"
-      );
+    return functionCallWithValue(target, data, value, "Address: low-level call with value failed");
   }
 
   function functionCallWithValue(
@@ -192,10 +169,7 @@ library Address {
     uint256 value,
     string memory errorMessage
   ) internal returns (bytes memory) {
-    require(
-      address(this).balance >= value,
-      "Address: insufficient balance for call"
-    );
+    require(address(this).balance >= value, "Address: insufficient balance for call");
     require(isContract(target), "Address: call to non-contract");
 
     // solhint-disable-next-line avoid-low-level-calls
@@ -212,9 +186,7 @@ library Address {
     require(isContract(target), "Address: call to non-contract");
 
     // solhint-disable-next-line avoid-low-level-calls
-    (bool success, bytes memory returndata) = target.call{value: weiValue}(
-      data
-    );
+    (bool success, bytes memory returndata) = target.call{value: weiValue}(data);
     if (success) {
       return returndata;
     } else {
@@ -233,13 +205,8 @@ library Address {
     }
   }
 
-  function functionStaticCall(address target, bytes memory data)
-    internal
-    view
-    returns (bytes memory)
-  {
-    return
-      functionStaticCall(target, data, "Address: low-level static call failed");
+  function functionStaticCall(address target, bytes memory data) internal view returns (bytes memory) {
+    return functionStaticCall(target, data, "Address: low-level static call failed");
   }
 
   function functionStaticCall(
@@ -254,16 +221,8 @@ library Address {
     return _verifyCallResult(success, returndata, errorMessage);
   }
 
-  function functionDelegateCall(address target, bytes memory data)
-    internal
-    returns (bytes memory)
-  {
-    return
-      functionDelegateCall(
-        target,
-        data,
-        "Address: low-level delegate call failed"
-      );
+  function functionDelegateCall(address target, bytes memory data) internal returns (bytes memory) {
+    return functionDelegateCall(target, data, "Address: low-level delegate call failed");
   }
 
   function functionDelegateCall(
@@ -297,11 +256,7 @@ library Address {
     }
   }
 
-  function addressToString(address _address)
-    internal
-    pure
-    returns (string memory)
-  {
+  function addressToString(address _address) internal pure returns (string memory) {
     bytes32 _bytes = bytes32(uint256(_address));
     bytes memory HEX = "0123456789abcdef";
     bytes memory _addr = new bytes(42);
@@ -327,10 +282,7 @@ interface IERC20 {
 
   function transfer(address recipient, uint256 amount) external returns (bool);
 
-  function allowance(address owner, address spender)
-    external
-    view
-    returns (uint256);
+  function allowance(address owner, address spender) external view returns (uint256);
 
   function approve(address spender, uint256 amount) external returns (bool);
 
@@ -349,8 +301,7 @@ abstract contract ERC20 is IERC20 {
   using SafeMath for uint256;
 
   // TODO comment actual hash value.
-  bytes32 private constant ERC20TOKEN_ERC1820_INTERFACE_ID =
-    keccak256("ERC20Token");
+  bytes32 private constant ERC20TOKEN_ERC1820_INTERFACE_ID = keccak256("ERC20Token");
 
   mapping(address => uint256) internal _balances;
 
@@ -390,42 +341,20 @@ abstract contract ERC20 is IERC20 {
     return _totalSupply;
   }
 
-  function balanceOf(address account)
-    public
-    view
-    virtual
-    override
-    returns (uint256)
-  {
+  function balanceOf(address account) public view virtual override returns (uint256) {
     return _balances[account];
   }
 
-  function transfer(address recipient, uint256 amount)
-    public
-    virtual
-    override
-    returns (bool)
-  {
+  function transfer(address recipient, uint256 amount) public virtual override returns (bool) {
     _transfer(msg.sender, recipient, amount);
     return true;
   }
 
-  function allowance(address owner, address spender)
-    public
-    view
-    virtual
-    override
-    returns (uint256)
-  {
+  function allowance(address owner, address spender) public view virtual override returns (uint256) {
     return _allowances[owner][spender];
   }
 
-  function approve(address spender, uint256 amount)
-    public
-    virtual
-    override
-    returns (bool)
-  {
+  function approve(address spender, uint256 amount) public virtual override returns (bool) {
     _approve(msg.sender, spender, amount);
     return true;
   }
@@ -439,39 +368,21 @@ abstract contract ERC20 is IERC20 {
     _approve(
       sender,
       msg.sender,
-      _allowances[sender][msg.sender].sub(
-        amount,
-        "ERC20: transfer amount exceeds allowance"
-      )
+      _allowances[sender][msg.sender].sub(amount, "ERC20: transfer amount exceeds allowance")
     );
     return true;
   }
 
-  function increaseAllowance(address spender, uint256 addedValue)
-    public
-    virtual
-    returns (bool)
-  {
-    _approve(
-      msg.sender,
-      spender,
-      _allowances[msg.sender][spender].add(addedValue)
-    );
+  function increaseAllowance(address spender, uint256 addedValue) public virtual returns (bool) {
+    _approve(msg.sender, spender, _allowances[msg.sender][spender].add(addedValue));
     return true;
   }
 
-  function decreaseAllowance(address spender, uint256 subtractedValue)
-    public
-    virtual
-    returns (bool)
-  {
+  function decreaseAllowance(address spender, uint256 subtractedValue) public virtual returns (bool) {
     _approve(
       msg.sender,
       spender,
-      _allowances[msg.sender][spender].sub(
-        subtractedValue,
-        "ERC20: decreased allowance below zero"
-      )
+      _allowances[msg.sender][spender].sub(subtractedValue, "ERC20: decreased allowance below zero")
     );
     return true;
   }
@@ -486,10 +397,7 @@ abstract contract ERC20 is IERC20 {
 
     _beforeTokenTransfer(sender, recipient, amount);
 
-    _balances[sender] = _balances[sender].sub(
-      amount,
-      "ERC20: transfer amount exceeds balance"
-    );
+    _balances[sender] = _balances[sender].sub(amount, "ERC20: transfer amount exceeds balance");
     _balances[recipient] = _balances[recipient].add(amount);
     emit Transfer(sender, recipient, amount);
   }
@@ -507,10 +415,7 @@ abstract contract ERC20 is IERC20 {
 
     _beforeTokenTransfer(account, address(0), amount);
 
-    _balances[account] = _balances[account].sub(
-      amount,
-      "ERC20: burn amount exceeds balance"
-    );
+    _balances[account] = _balances[account].sub(amount, "ERC20: burn amount exceeds balance");
     _totalSupply = _totalSupply.sub(amount);
     emit Transfer(account, address(0), amount);
   }
@@ -574,8 +479,7 @@ abstract contract ERC20Permit is ERC20, IERC2612Permit {
   mapping(address => Counters.Counter) private _nonces;
 
   // keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)");
-  bytes32 public constant PERMIT_TYPEHASH =
-    0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9;
+  bytes32 public constant PERMIT_TYPEHASH = 0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9;
 
   bytes32 public DOMAIN_SEPARATOR;
 
@@ -587,9 +491,7 @@ abstract contract ERC20Permit is ERC20, IERC2612Permit {
 
     DOMAIN_SEPARATOR = keccak256(
       abi.encode(
-        keccak256(
-          "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
-        ),
+        keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
         keccak256(bytes(name())),
         keccak256(bytes("1")), // Version
         chainID,
@@ -610,25 +512,13 @@ abstract contract ERC20Permit is ERC20, IERC2612Permit {
     require(block.timestamp <= deadline, "Permit: expired deadline");
 
     bytes32 hashStruct = keccak256(
-      abi.encode(
-        PERMIT_TYPEHASH,
-        owner,
-        spender,
-        amount,
-        _nonces[owner].current(),
-        deadline
-      )
+      abi.encode(PERMIT_TYPEHASH, owner, spender, amount, _nonces[owner].current(), deadline)
     );
 
-    bytes32 _hash = keccak256(
-      abi.encodePacked(uint16(0x1901), DOMAIN_SEPARATOR, hashStruct)
-    );
+    bytes32 _hash = keccak256(abi.encodePacked(uint16(0x1901), DOMAIN_SEPARATOR, hashStruct));
 
     address signer = ecrecover(_hash, v, r, s);
-    require(
-      signer != address(0) && signer == owner,
-      "ZeroSwapPermit: Invalid signature"
-    );
+    require(signer != address(0) && signer == owner, "ZeroSwapPermit: Invalid signature");
 
     _nonces[owner].increment();
     _approve(owner, spender, amount);
@@ -648,10 +538,7 @@ library SafeERC20 {
     address to,
     uint256 value
   ) internal {
-    _callOptionalReturn(
-      token,
-      abi.encodeWithSelector(token.transfer.selector, to, value)
-    );
+    _callOptionalReturn(token, abi.encodeWithSelector(token.transfer.selector, to, value));
   }
 
   function safeTransferFrom(
@@ -660,10 +547,7 @@ library SafeERC20 {
     address to,
     uint256 value
   ) internal {
-    _callOptionalReturn(
-      token,
-      abi.encodeWithSelector(token.transferFrom.selector, from, to, value)
-    );
+    _callOptionalReturn(token, abi.encodeWithSelector(token.transferFrom.selector, from, to, value));
   }
 
   function safeApprove(
@@ -675,10 +559,7 @@ library SafeERC20 {
       (value == 0) || (token.allowance(address(this), spender) == 0),
       "SafeERC20: approve from non-zero to non-zero allowance"
     );
-    _callOptionalReturn(
-      token,
-      abi.encodeWithSelector(token.approve.selector, spender, value)
-    );
+    _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, value));
   }
 
   function safeIncreaseAllowance(
@@ -687,10 +568,7 @@ library SafeERC20 {
     uint256 value
   ) internal {
     uint256 newAllowance = token.allowance(address(this), spender).add(value);
-    _callOptionalReturn(
-      token,
-      abi.encodeWithSelector(token.approve.selector, spender, newAllowance)
-    );
+    _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, newAllowance));
   }
 
   function safeDecreaseAllowance(
@@ -702,34 +580,21 @@ library SafeERC20 {
       value,
       "SafeERC20: decreased allowance below zero"
     );
-    _callOptionalReturn(
-      token,
-      abi.encodeWithSelector(token.approve.selector, spender, newAllowance)
-    );
+    _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, newAllowance));
   }
 
   function _callOptionalReturn(IERC20 token, bytes memory data) private {
-    bytes memory returndata = address(token).functionCall(
-      data,
-      "SafeERC20: low-level call failed"
-    );
+    bytes memory returndata = address(token).functionCall(data, "SafeERC20: low-level call failed");
     if (returndata.length > 0) {
       // Return data is optional
       // solhint-disable-next-line max-line-length
-      require(
-        abi.decode(returndata, (bool)),
-        "SafeERC20: ERC20 operation did not succeed"
-      );
+      require(abi.decode(returndata, (bool)), "SafeERC20: ERC20 operation did not succeed");
     }
   }
 }
 
 library FullMath {
-  function fullMul(uint256 x, uint256 y)
-    private
-    pure
-    returns (uint256 l, uint256 h)
-  {
+  function fullMul(uint256 x, uint256 y) private pure returns (uint256 l, uint256 h) {
     uint256 mm = mulmod(x, y, uint256(-1));
     l = x * y;
     h = mm - l;
@@ -782,27 +647,18 @@ library FixedPoint {
 
   uint8 private constant RESOLUTION = 112;
   uint256 private constant Q112 = 0x10000000000000000000000000000;
-  uint256 private constant Q224 =
-    0x100000000000000000000000000000000000000000000000000000000;
+  uint256 private constant Q224 = 0x100000000000000000000000000000000000000000000000000000000;
   uint256 private constant LOWER_MASK = 0xffffffffffffffffffffffffffff; // decimal of UQ*x112 (lower 112 bits)
 
   function decode(uq112x112 memory self) internal pure returns (uint112) {
     return uint112(self._x >> RESOLUTION);
   }
 
-  function decode112with18(uq112x112 memory self)
-    internal
-    pure
-    returns (uint256)
-  {
+  function decode112with18(uq112x112 memory self) internal pure returns (uint256) {
     return uint256(self._x) / 5192296858534827;
   }
 
-  function fraction(uint256 numerator, uint256 denominator)
-    internal
-    pure
-    returns (uq112x112 memory)
-  {
+  function fraction(uint256 numerator, uint256 denominator) internal pure returns (uq112x112 memory) {
     require(denominator > 0, "FixedPoint::fraction: division by zero");
     if (numerator == 0) return FixedPoint.uq112x112(0);
 
@@ -825,17 +681,11 @@ interface ITreasury {
     uint256 _profit
   ) external returns (bool);
 
-  function valueOfToken(address _token, uint256 _amount)
-    external
-    view
-    returns (uint256 value_);
+  function valueOfToken(address _token, uint256 _amount) external view returns (uint256 value_);
 }
 
 interface IBondCalculator {
-  function valuation(address _LP, uint256 _amount)
-    external
-    view
-    returns (uint256);
+  function valuation(address _LP, uint256 _amount) external view returns (uint256);
 
   function markdown(address _LP) external view returns (uint256);
 }
@@ -855,28 +705,10 @@ contract MockOlympusBondDepository is Ownable {
 
   /* ======== EVENTS ======== */
 
-  event BondCreated(
-    uint256 deposit,
-    uint256 indexed payout,
-    uint256 indexed expires,
-    uint256 indexed priceInUSD
-  );
-  event BondRedeemed(
-    address indexed recipient,
-    uint256 payout,
-    uint256 remaining
-  );
-  event BondPriceChanged(
-    uint256 indexed priceInUSD,
-    uint256 indexed internalPrice,
-    uint256 indexed debtRatio
-  );
-  event ControlVariableAdjustment(
-    uint256 initialBCV,
-    uint256 newBCV,
-    uint256 adjustment,
-    bool addition
-  );
+  event BondCreated(uint256 deposit, uint256 indexed payout, uint256 indexed expires, uint256 indexed priceInUSD);
+  event BondRedeemed(address indexed recipient, uint256 payout, uint256 remaining);
+  event BondPriceChanged(uint256 indexed priceInUSD, uint256 indexed internalPrice, uint256 indexed debtRatio);
+  event ControlVariableAdjustment(uint256 initialBCV, uint256 newBCV, uint256 adjustment, bool addition);
 
   /* ======== STATE VARIABLES ======== */
 
@@ -997,10 +829,7 @@ contract MockOlympusBondDepository is Ownable {
    *  @param _parameter PARAMETER
    *  @param _input uint
    */
-  function setBondTerms(PARAMETER _parameter, uint256 _input)
-    external
-    onlyPolicy
-  {
+  function setBondTerms(PARAMETER _parameter, uint256 _input) external onlyPolicy {
     if (_parameter == PARAMETER.VESTING) {
       // 0
       require(_input >= 10000, "Vesting must be longer than 36 hours");
@@ -1032,18 +861,9 @@ contract MockOlympusBondDepository is Ownable {
     uint256 _target,
     uint256 _buffer
   ) external onlyPolicy {
-    require(
-      _increment <= terms.controlVariable.mul(25).div(1000),
-      "Increment too large"
-    );
+    require(_increment <= terms.controlVariable.mul(25).div(1000), "Increment too large");
 
-    adjustment = Adjust({
-      add: _addition,
-      rate: _increment,
-      target: _target,
-      buffer: _buffer,
-      lastBlock: block.number
-    });
+    adjustment = Adjust({add: _addition, rate: _increment, target: _target, buffer: _buffer, lastBlock: block.number});
   }
 
   /**
@@ -1122,12 +942,7 @@ contract MockOlympusBondDepository is Ownable {
     });
 
     // indexed events are emitted
-    emit BondCreated(
-      _amount,
-      payout,
-      block.number.add(terms.vestingTerm),
-      priceInUSD
-    );
+    emit BondCreated(_amount, payout, block.number.add(terms.vestingTerm), priceInUSD);
     emit BondPriceChanged(bondPriceInUSD(), _bondPrice(), debtRatio());
 
     adjust(); // control variable is adjusted
@@ -1216,12 +1031,7 @@ contract MockOlympusBondDepository is Ownable {
         }
       }
       adjustment.lastBlock = block.number;
-      emit ControlVariableAdjustment(
-        initial,
-        terms.controlVariable,
-        adjustment.rate,
-        adjustment.add
-      );
+      emit ControlVariableAdjustment(initial, terms.controlVariable, adjustment.rate, adjustment.add);
     }
   }
 
@@ -1282,9 +1092,7 @@ contract MockOlympusBondDepository is Ownable {
    */
   function bondPriceInUSD() public view returns (uint256 price_) {
     if (isLiquidityBond) {
-      price_ = bondPrice()
-        .mul(IBondCalculator(bondCalculator).markdown(principle))
-        .div(100);
+      price_ = bondPrice().mul(IBondCalculator(bondCalculator).markdown(principle)).div(100);
     } else {
       price_ = bondPrice().mul(10**IERC20(principle).decimals()).div(100);
     }
@@ -1296,10 +1104,7 @@ contract MockOlympusBondDepository is Ownable {
    */
   function debtRatio() public view returns (uint256 debtRatio_) {
     uint256 supply = IERC20(OHM).totalSupply();
-    debtRatio_ = FixedPoint
-      .fraction(currentDebt().mul(1e9), supply)
-      .decode112with18()
-      .div(1e18);
+    debtRatio_ = FixedPoint.fraction(currentDebt().mul(1e9), supply).decode112with18().div(1e18);
   }
 
   /**
@@ -1308,10 +1113,7 @@ contract MockOlympusBondDepository is Ownable {
    */
   function standardizedDebtRatio() external view returns (uint256) {
     if (isLiquidityBond) {
-      return
-        debtRatio()
-          .mul(IBondCalculator(bondCalculator).markdown(principle))
-          .div(1e9);
+      return debtRatio().mul(IBondCalculator(bondCalculator).markdown(principle)).div(1e9);
     } else {
       return debtRatio();
     }
@@ -1342,11 +1144,7 @@ contract MockOlympusBondDepository is Ownable {
    *  @param _depositor address
    *  @return percentVested_ uint
    */
-  function percentVestedFor(address _depositor)
-    public
-    view
-    returns (uint256 percentVested_)
-  {
+  function percentVestedFor(address _depositor) public view returns (uint256 percentVested_) {
     Bond memory bond = bondInfo[_depositor];
     uint256 blocksSinceLast = block.number.sub(bond.lastBlock);
     uint256 vesting = bond.vesting;
@@ -1363,11 +1161,7 @@ contract MockOlympusBondDepository is Ownable {
    *  @param _depositor address
    *  @return pendingPayout_ uint
    */
-  function pendingPayoutFor(address _depositor)
-    external
-    view
-    returns (uint256 pendingPayout_)
-  {
+  function pendingPayoutFor(address _depositor) external view returns (uint256 pendingPayout_) {
     uint256 percentVested = percentVestedFor(_depositor);
     uint256 payout = bondInfo[_depositor].payout;
 

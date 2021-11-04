@@ -81,9 +81,7 @@ library Address {
     require(isContract(target), "Address: call to non-contract");
 
     // solhint-disable-next-line avoid-low-level-calls
-    (bool success, bytes memory returndata) = target.call{value: weiValue}(
-      data
-    );
+    (bool success, bytes memory returndata) = target.call{value: weiValue}(data);
     if (success) {
       return returndata;
     } else {
@@ -134,14 +132,8 @@ contract Ownable is IOwnable {
   address internal _owner;
   address internal _newOwner;
 
-  event OwnershipPushed(
-    address indexed previousOwner,
-    address indexed newOwner
-  );
-  event OwnershipPulled(
-    address indexed previousOwner,
-    address indexed newOwner
-  );
+  event OwnershipPushed(address indexed previousOwner, address indexed newOwner);
+  event OwnershipPulled(address indexed previousOwner, address indexed newOwner);
 
   constructor() {
     _owner = msg.sender;
@@ -162,12 +154,7 @@ contract Ownable is IOwnable {
     _owner = address(0);
   }
 
-  function pushManagement(address newOwner_)
-    public
-    virtual
-    override
-    onlyManager
-  {
+  function pushManagement(address newOwner_) public virtual override onlyManager {
     require(newOwner_ != address(0), "Ownable: new owner is the zero address");
     emit OwnershipPushed(_owner, newOwner_);
     _newOwner = newOwner_;
@@ -211,10 +198,7 @@ library SafeERC20 {
     address to,
     uint256 value
   ) internal {
-    _callOptionalReturn(
-      token,
-      abi.encodeWithSelector(token.transfer.selector, to, value)
-    );
+    _callOptionalReturn(token, abi.encodeWithSelector(token.transfer.selector, to, value));
   }
 
   function safeTransferFrom(
@@ -223,24 +207,15 @@ library SafeERC20 {
     address to,
     uint256 value
   ) internal {
-    _callOptionalReturn(
-      token,
-      abi.encodeWithSelector(token.transferFrom.selector, from, to, value)
-    );
+    _callOptionalReturn(token, abi.encodeWithSelector(token.transferFrom.selector, from, to, value));
   }
 
   function _callOptionalReturn(IERC20 token, bytes memory data) private {
-    bytes memory returndata = address(token).functionCall(
-      data,
-      "SafeERC20: low-level call failed"
-    );
+    bytes memory returndata = address(token).functionCall(data, "SafeERC20: low-level call failed");
     if (returndata.length > 0) {
       // Return data is optional
       // solhint-disable-next-line max-line-length
-      require(
-        abi.decode(returndata, (bool)),
-        "SafeERC20: ERC20 operation did not succeed"
-      );
+      require(abi.decode(returndata, (bool)), "SafeERC20: ERC20 operation did not succeed");
     }
   }
 }
@@ -256,10 +231,7 @@ interface IOHMERC20 {
 }
 
 interface IBondCalculator {
-  function valuation(address pair_, uint256 amount_)
-    external
-    view
-    returns (uint256 _value);
+  function valuation(address pair_, uint256 amount_) external view returns (uint256 _value);
 }
 
 contract MockOlympusTreasury is Ownable {
@@ -268,32 +240,14 @@ contract MockOlympusTreasury is Ownable {
 
   event Deposit(address indexed token, uint256 amount, uint256 value);
   event Withdrawal(address indexed token, uint256 amount, uint256 value);
-  event CreateDebt(
-    address indexed debtor,
-    address indexed token,
-    uint256 amount,
-    uint256 value
-  );
-  event RepayDebt(
-    address indexed debtor,
-    address indexed token,
-    uint256 amount,
-    uint256 value
-  );
+  event CreateDebt(address indexed debtor, address indexed token, uint256 amount, uint256 value);
+  event RepayDebt(address indexed debtor, address indexed token, uint256 amount, uint256 value);
   event ReservesManaged(address indexed token, uint256 amount);
   event ReservesUpdated(uint256 indexed totalReserves);
   event ReservesAudited(uint256 indexed totalReserves);
-  event RewardsMinted(
-    address indexed caller,
-    address indexed recipient,
-    uint256 amount
-  );
+  event RewardsMinted(address indexed caller, address indexed recipient, uint256 amount);
   event ChangeQueued(MANAGING indexed managing, address queued);
-  event ChangeActivated(
-    MANAGING indexed managing,
-    address activated,
-    bool result
-  );
+  event ChangeActivated(MANAGING indexed managing, address activated, bool result);
 
   enum MANAGING {
     RESERVEDEPOSITOR,
@@ -544,20 +498,10 @@ contract MockOlympusTreasury is Ownable {
   function auditReserves() external onlyManager {
     uint256 reserves;
     for (uint256 i = 0; i < reserveTokens.length; i++) {
-      reserves = reserves.add(
-        valueOfToken(
-          reserveTokens[i],
-          IERC20(reserveTokens[i]).balanceOf(address(this))
-        )
-      );
+      reserves = reserves.add(valueOfToken(reserveTokens[i], IERC20(reserveTokens[i]).balanceOf(address(this))));
     }
     for (uint256 i = 0; i < liquidityTokens.length; i++) {
-      reserves = reserves.add(
-        valueOfToken(
-          liquidityTokens[i],
-          IERC20(liquidityTokens[i]).balanceOf(address(this))
-        )
-      );
+      reserves = reserves.add(valueOfToken(liquidityTokens[i], IERC20(liquidityTokens[i]).balanceOf(address(this))));
     }
     totalReserves = reserves;
     emit ReservesUpdated(reserves);
@@ -570,21 +514,12 @@ contract MockOlympusTreasury is Ownable {
         @param _amount uint
         @return value_ uint
      */
-  function valueOfToken(address _token, uint256 _amount)
-    public
-    view
-    returns (uint256 value_)
-  {
+  function valueOfToken(address _token, uint256 _amount) public view returns (uint256 value_) {
     if (isReserveToken[_token]) {
       // convert amount to match OHM decimals
-      value_ = _amount.mul(10**IERC20(OHM).decimals()).div(
-        10**IERC20(_token).decimals()
-      );
+      value_ = _amount.mul(10**IERC20(OHM).decimals()).div(10**IERC20(_token).decimals());
     } else if (isLiquidityToken[_token]) {
-      value_ = IBondCalculator(bondCalculator[_token]).valuation(
-        _token,
-        _amount
-      );
+      value_ = IBondCalculator(bondCalculator[_token]).valuation(_token, _amount);
     }
   }
 
@@ -594,11 +529,7 @@ contract MockOlympusTreasury is Ownable {
         @param _address address
         @return bool
      */
-  function queue(MANAGING _managing, address _address)
-    external
-    onlyManager
-    returns (bool)
-  {
+  function queue(MANAGING _managing, address _address) external onlyManager returns (bool) {
     require(_address != address(0));
     if (_managing == MANAGING.RESERVEDEPOSITOR) {
       // 0
@@ -611,22 +542,16 @@ contract MockOlympusTreasury is Ownable {
       reserveTokenQueue[_address] = block.number.add(blocksNeededForQueue);
     } else if (_managing == MANAGING.RESERVEMANAGER) {
       // 3
-      ReserveManagerQueue[_address] = block.number.add(
-        blocksNeededForQueue.mul(2)
-      );
+      ReserveManagerQueue[_address] = block.number.add(blocksNeededForQueue.mul(2));
     } else if (_managing == MANAGING.LIQUIDITYDEPOSITOR) {
       // 4
-      LiquidityDepositorQueue[_address] = block.number.add(
-        blocksNeededForQueue
-      );
+      LiquidityDepositorQueue[_address] = block.number.add(blocksNeededForQueue);
     } else if (_managing == MANAGING.LIQUIDITYTOKEN) {
       // 5
       LiquidityTokenQueue[_address] = block.number.add(blocksNeededForQueue);
     } else if (_managing == MANAGING.LIQUIDITYMANAGER) {
       // 6
-      LiquidityManagerQueue[_address] = block.number.add(
-        blocksNeededForQueue.mul(2)
-      );
+      LiquidityManagerQueue[_address] = block.number.add(blocksNeededForQueue.mul(2));
     } else if (_managing == MANAGING.DEBTOR) {
       // 7
       debtorQueue[_address] = block.number.add(blocksNeededForQueue);
@@ -699,9 +624,7 @@ contract MockOlympusTreasury is Ownable {
       isReserveManager[_address] = result;
     } else if (_managing == MANAGING.LIQUIDITYDEPOSITOR) {
       // 4
-      if (
-        requirements(LiquidityDepositorQueue, isLiquidityDepositor, _address)
-      ) {
+      if (requirements(LiquidityDepositorQueue, isLiquidityDepositor, _address)) {
         liquidityDepositors.push(_address);
         LiquidityDepositorQueue[_address] = 0;
         if (!listContains(liquidityDepositors, _address)) {
@@ -788,11 +711,7 @@ contract MockOlympusTreasury is Ownable {
         @param _token address
         @return bool
      */
-  function listContains(address[] storage _list, address _token)
-    internal
-    view
-    returns (bool)
-  {
+  function listContains(address[] storage _list, address _token) internal view returns (bool) {
     for (uint256 i = 0; i < _list.length; i++) {
       if (_list[i] == _token) {
         return true;
