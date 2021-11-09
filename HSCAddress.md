@@ -1,0 +1,9 @@
+# HSC Address
+
+- OlympusERC20Token:     0x712968FF3F3Af287719Abc4a511C1a5a7b6d391c
+- OlympusTreasury:       0x1381192ae3a3475618a9d93e8757b76B30D696f8
+- Distributor:           0x7C154f2cdC6c213172AD30182fEE5A35b2c508BB
+- sOlympus:              0xcE807622b097bf6e441984a8785CFC80944876FA
+- OlympusStaking:        0x3A2A7823d6e696Ed3113f9F1fFaffD459Db4f0b9
+- StakingHelper:         0xBE7e24581d384f1539Edc1B175B1B98751f8EC0A
+- StakingWarmup:         0xC469bcc171A9555FaeC67F1e3C098b87c54998Ec

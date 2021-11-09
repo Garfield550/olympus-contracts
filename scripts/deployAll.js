@@ -8,7 +8,9 @@ const { ethers } = require("hardhat");
 async function main() {
 
     const [deployer, MockDAO] = await ethers.getSigners();
-    console.log('Deploying contracts with the account: ' + deployer.address);
+    console.log('Deploying contracts with the account:', deployer.address);
+    const balance = await deployer.getBalance();
+    console.log('Account balance:', balance.toString());
 
     // Initial staking index
     const initialIndex = '7675210820';
