@@ -13,7 +13,7 @@ async function main() {
     console.log('Account balance:', balance.toString());
 
     // Initial staking index
-    const initialIndex = '7675210820';
+    // const initialIndex = '7675210820';
 
     // First block epoch occurs
     const firstEpochBlock = '8961000';
@@ -25,7 +25,7 @@ async function main() {
     const epochLengthInBlocks = '2200';
 
     // Initial reward rate for epoch
-    const initialRewardRate = '3000';
+    // const initialRewardRate = '3000';
 
     // Ethereum 0 address, used when toggling changes in treasury
     const zeroAddress = '0x0000000000000000000000000000000000000000';
@@ -34,7 +34,7 @@ async function main() {
     const largeApproval = '100000000000000000000000000000000';
 
     // Initial mint for Frax and DAI (10,000,000)
-    const initialMint = '10000000000000000000000000';
+    // const initialMint = '10000000000000000000000000';
 
     // DAI bond BCV
     const daiBondBCV = '369';
@@ -85,8 +85,8 @@ async function main() {
     const olympusBondingCalculator = await OlympusBondingCalculator.deploy( ohm.address );
 
     // Deploy staking distributor
-    const Distributor = await ethers.getContractFactory('Distributor');
-    const distributor = await Distributor.deploy(treasury.address, ohm.address, epochLengthInBlocks, firstEpochBlock);
+    // const Distributor = await ethers.getContractFactory('Distributor');
+    // const distributor = await Distributor.deploy(treasury.address, ohm.address, epochLengthInBlocks, firstEpochBlock);
 
     // Deploy sOHM
     const SOHM = await ethers.getContractFactory('sOlympus');
@@ -97,8 +97,8 @@ async function main() {
     const staking = await Staking.deploy( ohm.address, sOHM.address, epochLengthInBlocks, firstEpochNumber, firstEpochBlock );
 
     // Deploy staking warmpup
-    const StakingWarmpup = await ethers.getContractFactory('StakingWarmup');
-    const stakingWarmup = await StakingWarmpup.deploy(staking.address, sOHM.address);
+    // const StakingWarmpup = await ethers.getContractFactory('StakingWarmup');
+    // const stakingWarmup = await StakingWarmpup.deploy(staking.address, sOHM.address);
 
     // Deploy staking helper
     // StakingHelper: 0xa55cE3E25bD4cb6C5375AA393335b708dB790915
@@ -150,30 +150,30 @@ async function main() {
     await fraxBond.setStaking(staking.address, false);
 
     // Initialize sOHM and set the index
-    await sOHM.initialize(staking.address);
-    await sOHM.setIndex(initialIndex);
+    // await sOHM.initialize(staking.address);
+    // await sOHM.setIndex(initialIndex);
 
     // set distributor contract and warmup contract
-    await staking.setContract('0', distributor.address); // CONTRACTS.DISTRIBUTOR
-    await staking.setContract('1', stakingWarmup.address); // CONTRACTS.WARMUP
+    // await staking.setContract('0', distributor.address); // CONTRACTS.DISTRIBUTOR
+    // await staking.setContract('1', stakingWarmup.address); // CONTRACTS.WARMUP
 
     // Set treasury for OHM token
-    await ohm.setVault(treasury.address);
+    // await ohm.setVault(treasury.address);
 
     // Add staking contract as distributor recipient
-    await distributor.addRecipient(staking.address, initialRewardRate);
+    // await distributor.addRecipient(staking.address, initialRewardRate);
 
     // queue and toggle reward manager
-    await treasury.queue('8', distributor.address);
-    await treasury.toggle('8', distributor.address, zeroAddress); // MANAGING.REWARDMANAGER
+    // await treasury.queue('8', distributor.address);
+    // await treasury.toggle('8', distributor.address, zeroAddress); // MANAGING.REWARDMANAGER
 
     // queue and toggle deployer reserve depositor
-    await treasury.queue('0', deployer.address);
-    await treasury.toggle('0', deployer.address, zeroAddress);
+    // await treasury.queue('0', deployer.address);
+    // await treasury.toggle('0', deployer.address, zeroAddress);
 
     // queue and toggle liquidity depositor
-    await treasury.queue('4', deployer.address, );
-    await treasury.toggle('4', deployer.address, zeroAddress); // MANAGING.LIQUIDITYDEPOSITOR
+    // await treasury.queue('4', deployer.address, );
+    // await treasury.toggle('4', deployer.address, zeroAddress); // MANAGING.LIQUIDITYDEPOSITOR
 
     // Approve the treasury to spend DAI and Frax
     await dai.approve(treasury.address, largeApproval );
@@ -184,8 +184,8 @@ async function main() {
     await frax.approve(fraxBond.address, largeApproval );
 
     // Approve staking and staking helper contact to spend deployer's OHM
-    await ohm.approve(staking.address, largeApproval);
-    await ohm.approve(stakingHelper.address, largeApproval);
+    // await ohm.approve(staking.address, largeApproval);
+    // await ohm.approve(stakingHelper.address, largeApproval);
 
     // Deposit 9,000,000 DAI to treasury, 600,000 OHM gets minted to deployer and 8,400,000 are in treasury as excesss reserves
     await treasury.deposit('9000000000000000000000000', dai.address, '8400000000000000');
@@ -203,13 +203,13 @@ async function main() {
     console.log( "OHM: " + ohm.address );
     console.log( "DAI: " + dai.address );
     console.log( "Frax: " + frax.address );
-    console.log( "Treasury: " + treasury.address );
+    // console.log( "Treasury: " + treasury.address );
     console.log( "Calc: " + olympusBondingCalculator.address );
-    console.log( "Staking: " + staking.address );
-    console.log( "sOHM: " + sOHM.address );
-    console.log( "Distributor " + distributor.address );
-    console.log( "Staking Wawrmup " + stakingWarmup.address );
-    console.log( "Staking Helper " + stakingHelper.address );
+    // console.log( "Staking: " + staking.address );
+    // console.log( "sOHM: " + sOHM.address );
+    // console.log( "Distributor " + distributor.address );
+    // console.log( "Staking Wawrmup " + stakingWarmup.address );
+    // console.log( "Staking Helper " + stakingHelper.address );
     console.log( "DAI Bond: " + daiBond.address );
     console.log( "Frax Bond: " + fraxBond.address );
 }
