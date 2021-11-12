@@ -8,4 +8,5 @@
 - StakingHelper:            0xBE7e24581d384f1539Edc1B175B1B98751f8EC0A
 - StakingWarmup:            0xC469bcc171A9555FaeC67F1e3C098b87c54998Ec
 - OlympusBondingCalculator: 0x9542998067eb8c0e1F2D78507F114f61d6E513a6
-- OlympusBondDepository:    0xE828a37620f55d95aa62a7A608E6FaEd6A5c8B91
+- RedeemHelper:             0x6F62a16ebf69BEe0Cb12D89Bfa30940EfdDCD5a3
+- USDTBond:                 0x8C99384b56AC370E84690FA7C5323D3A5Dc4E439

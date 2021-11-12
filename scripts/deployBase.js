@@ -1,16 +1,15 @@
 const { ethers } = require("hardhat");
 
 async function waitForBlocks(blocks) {
+    console.log("Waiting for " + blocks + " blocks");
     const _blockNumber = await ethers.provider.getBlockNumber();
-    await new Promise((resolve, reject) => {
+    await new Promise((resolve) => {
         ethers.provider.on('block', (blockNumber) => {
-            console.log('Block:', blockNumber.toString());
+            console.log("Block: " + blockNumber);
             if (blockNumber == _blockNumber + blocks) {
+                ethers.provider.removeAllListeners('block');
                 resolve();
             }
-        });
-        ethers.provider.on('error', (error) => {
-            reject(error);
         });
     });
 }
@@ -33,6 +32,8 @@ async function main() {
     const initialRewardRate = '3000';
     // Ethereum 0 address, used when toggling changes in treasury
     const zeroAddress = '0x0000000000000000000000000000000000000000';
+    // Large number for approval
+    const largeApproval = '100000000000000000000000000000000';
 
     // Deploy OHM
     console.log('Deploying OlympusERC20Token');
@@ -74,32 +75,44 @@ async function main() {
     // Set treasury for OHM token
     console.log('Setting treasury for OHM token');
     await ohm.setVault(treasury.address);
+
+    // Approve staking and staking helper contact to spend deployer's OHM
+    console.log('Approving staking contract to spend OHM');
+    await ohm.approve(staking.address, largeApproval);
+    console.log('Approving staking helper contract to spend OHM');
+    await ohm.approve(stakingHelper.address, largeApproval);
+
     // queue and toggle deployer reserve depositor
     console.log('Queueing reserve depositor');
     await treasury.queue('0', deployer.address);
-    await waitForBlocks(20);
+    await waitForBlocks(10);
     console.log('Toggling reserve depositor');
     await treasury.toggle('0', deployer.address, zeroAddress);
+
     // queue and toggle liquidity depositor
     console.log('Queueing liquidity depositor');
     await treasury.queue('4', deployer.address, );
-    await waitForBlocks(20);
+    await waitForBlocks(10);
     console.log('Toggling liquidity depositor');
     await treasury.toggle('4', deployer.address, zeroAddress); // MANAGING.LIQUIDITYDEPOSITOR
+
     // queue and toggle reward manager
     console.log('Queueing reward manager');
     await treasury.queue('8', distributor.address);
-    await waitForBlocks(20);
+    await waitForBlocks(10);
     console.log('Toggling reward manager');
     await treasury.toggle('8', distributor.address, zeroAddress); // MANAGING.REWARDMANAGER
+
     // Add staking contract as distributor recipient
     console.log('Adding staking contract as distributor recipient');
     await distributor.addRecipient(staking.address, initialRewardRate);
+
     // Initialize sOHM and set the index
     console.log('Initializing sOlympus');
     await sOHM.initialize(staking.address);
     console.log('Setting initial index');
     await sOHM.setIndex(initialIndex);
+
     // set distributor contract and warmup contract
     console.log('Setting staking distributor contract');
     await staking.setContract('0', distributor.address); // CONTRACTS.DISTRIBUTOR
