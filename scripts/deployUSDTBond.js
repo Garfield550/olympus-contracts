@@ -33,11 +33,11 @@ async function main() {
     // Max bond payout
     const maxBondPayout = '1000'
     // DAO fee for bond
-    const bondFee = '1000';
+    const bondFee = '100';
     // Max debt bond can take on
     const maxBondDebt = '50000000000000000000000';
     // Initial Bond debt
-    const intialBondDebt = '0'
+    const intialBondDebt = '1000000000'
 
     const OHM = await ethers.getContractAt('OlympusERC20Token', '0x712968FF3F3Af287719Abc4a511C1a5a7b6d391c');
     const Treasury = await ethers.getContractAt('OlympusTreasury', '0x1381192ae3a3475618a9d93e8757b76B30D696f8');
@@ -81,9 +81,13 @@ async function main() {
     // queue and toggle USDT bond reserve depositor
     console.log('Queueing USDT bond reserve depositor');
     await Treasury.queue('0', usdtBond.address);
-    await waitForBlocks(10);
+    await waitForBlocks(20);
     console.log('Toggling USDT bond reserve depositor');
     await Treasury.toggle('0', usdtBond.address, zeroAddress); // MANAGING.RESERVEDEPOSITOR
+
+    // Deposit 10 USDT to treasury
+    console.log('Depositing 10 USDT to treasury');
+    await Treasury.deposit('10000000', USDT.address, '0');
 
     // add USDT bond to redeem helper
     console.log('Add USDT bond to redeem helper');
