@@ -31,7 +31,7 @@ async function main() {
     // Max bond payout
     const maxBondPayout = '1000'
     // DAO fee for bond
-    const bondFee = '100';
+    const bondFee = '0';
     // Max debt bond can take on
     const maxBondDebt = '50000000000000000000000';
     // Initial Bond debt
@@ -41,7 +41,7 @@ async function main() {
     const Treasury = await ethers.getContractAt('OlympusTreasury', '0x1381192ae3a3475618a9d93e8757b76B30D696f8');
     const StakingHelper = await ethers.getContractAt('StakingHelper', '0xBE7e24581d384f1539Edc1B175B1B98751f8EC0A');
     const RedeemHelper = await ethers.getContractAt('RedeemHelper', '0x6F62a16ebf69BEe0Cb12D89Bfa30940EfdDCD5a3');
-    const OHMUSDTLP = await ethers.getContractAt('HOORC20Template', '0xD16bAbe52980554520F6Da505dF4d1b124c815a7');
+    const OHMUSDTLP = await ethers.getContractAt('UnisaveV2Pair', '0x2162d3879814bff99e74D1EBb09C2a66e67acBA9');
     const Calculator = await ethers.getContractAt('OlympusBondingCalculator', '0x9542998067eb8c0e1F2D78507F114f61d6E513a6');
 
     // Deploy USDT LP bond
@@ -73,7 +73,7 @@ async function main() {
     // queue and toggle USDT LP reserve token
     console.log('Queueing USDT LP reserve token');
     await Treasury.queue('2', OHMUSDTLP.address);
-    await waitForBlocks(10);
+    await waitForBlocks(20);
     console.log('Toggling USDT LP reserve token');
     await Treasury.toggle('2', OHMUSDTLP.address, Calculator.address); // MANAGING.RESERVETOKEN
 

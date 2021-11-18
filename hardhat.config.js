@@ -26,7 +26,7 @@ module.exports = {
       timeout: 1000 * 60,
       accounts: [process.env.PRIVATE_KEY || '0x0000000000000000000000000000000000000000'],
     },
-    hoo_mainnet: {
+    hsc_mainnet: {
       chainId: 70,
       url: 'https://http-mainnet.hoosmartchain.com',
       timeout: 1000 * 60,
